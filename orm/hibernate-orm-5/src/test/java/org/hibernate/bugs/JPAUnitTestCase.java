@@ -13,26 +13,48 @@ import org.junit.Test;
  */
 public class JPAUnitTestCase {
 
-	private EntityManagerFactory entityManagerFactory;
+    private EntityManagerFactory entityManagerFactory;
 
-	@Before
-	public void init() {
-		entityManagerFactory = Persistence.createEntityManagerFactory( "templatePU" );
-	}
+    private EntityManager em;
 
-	@After
-	public void destroy() {
-		entityManagerFactory.close();
-	}
+    @Before
+    public void init() {
+        entityManagerFactory = Persistence.createEntityManagerFactory("templatePU");
+        em = entityManagerFactory.createEntityManager();
+    }
 
-	// Entities are auto-discovered, so just add them anywhere on class-path
-	// Add your tests, using standard JUnit.
-	@Test
-	public void hhh123Test() throws Exception {
-		EntityManager entityManager = entityManagerFactory.createEntityManager();
-		entityManager.getTransaction().begin();
-		// Do stuff...
-		entityManager.getTransaction().commit();
-		entityManager.close();
-	}
+    @After
+    public void destroy() {
+        em.clear();
+        entityManagerFactory.close();
+    }
+
+    @Test
+    public void testJoinedInheritance() throws Exception {
+        String externalId = "someId";
+
+        String queryTemplate =
+              "SELECT iv "
+            + "FROM Item i "
+            + "JOIN i.itemVersions iv "
+            + "WHERE i.externalId = :externalId";
+
+        runInTransaction(() -> {
+            Item item = new Item(externalId);
+            em.persist(item);
+            ItemVersion itemVersion = new ItemVersionA(item, "foo bar");
+            em.persist(itemVersion);
+        });
+
+        runInTransaction(() -> {
+            em.createQuery(queryTemplate, ItemVersion.class).setParameter("externalId", externalId)
+                .getSingleResult();
+        });
+    }
+
+    private void runInTransaction(final Runnable runner) {
+        em.getTransaction().begin();
+        runner.run();
+        em.getTransaction().commit();
+    }
 }
