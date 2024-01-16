@@ -1,7 +1,7 @@
-package org.hibernate.bugs;
+package org.hibernate.bugs.joinedinheritance;
 
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("ItemVersionB")

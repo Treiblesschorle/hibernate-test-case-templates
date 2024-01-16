@@ -1,4 +1,4 @@
-package org.hibernate.bugs;
+package org.hibernate.bugs.joinedinheritance;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;

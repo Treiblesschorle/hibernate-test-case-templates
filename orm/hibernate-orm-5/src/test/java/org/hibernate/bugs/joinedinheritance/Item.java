@@ -1,7 +1,6 @@
-package org.hibernate.bugs;
+package org.hibernate.bugs.joinedinheritance;
 
 import java.util.List;
-import java.util.UUID;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
